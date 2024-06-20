@@ -39,7 +39,7 @@ android {
 dependencies {
 // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-
+    implementation("com.google.firebase:firebase-database:21.0.0")
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.messaging.ktx)
+    implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

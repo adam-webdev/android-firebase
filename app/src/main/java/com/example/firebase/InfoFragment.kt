@@ -1,59 +1,106 @@
 package com.example.firebase
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [InfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class InfoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var transactionAdapter: TransactionAdapter
+    private lateinit var transactionList: MutableList<Transaction>
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var buttonTambah: Button
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_info, container, false)
+        val view = inflater.inflate(R.layout.fragment_info, container, false)
+        recyclerView = view.findViewById(R.id.rvTransactions)
+//        buttonTambah = view.findViewById(R.id.btntambah)
+
+
+//        buttonTambah.setOnClickListener {
+////            val transaction = parentFragmentManager.beginTransaction()
+////            transaction.replace(R.id.nav_host_fragment, TambahEditTransaksiFragment())
+////            transaction.addToBackStack(null) // Allows the user to navigate back
+////            transaction.commit()
+//            val intent = Intent(requireContext(),TambahEditTransaksiFragment::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//            startActivity(intent)
+//        }
+
+        transactionList = mutableListOf()
+        transactionAdapter = TransactionAdapter(transactionList, { transaction ->
+            navigateToAddEditTransaction(transaction.id)
+        }, { id ->
+            deleteTransaction(id)
+        })
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = transactionAdapter
+        loadTransactions()
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment InfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            InfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun loadTransactions() {
+        val database = FirebaseDatabase.getInstance().getReference("datakas")
+        Log.d("Database", database.toString())
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                transactionList.clear()
+                for (data in snapshot.children) {
+                    val transaction = data.getValue(Transaction::class.java)
+                    if (transaction != null) {
+                        transactionList.add(transaction)
+                    }
                 }
+                transactionAdapter.notifyDataSetChanged()
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
+    }
+
+    private fun deleteTransaction(id: String) {
+        val database = FirebaseDatabase.getInstance().getReference("datakas")
+//        database.child(id).removeValue()
+
+        // Create an AlertDialog
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Hapus Data ini ?")
+        builder.setMessage("Apa anda yakin ingin menghapus data?")
+
+        // Set the positive button to delete the transaction
+        builder.setPositiveButton("ya") { dialog, which ->
+            database.child(id).removeValue()
+        }
+
+        // Set the negative button to cancel the deletion
+        builder.setNegativeButton("Tidak") { dialog, which ->
+            // Do nothing if the user cancels
+            dialog.dismiss()
+        }
+
+        // Show the AlertDialog
+        builder.show()
+    }
+
+    private fun navigateToAddEditTransaction(transactionId: String?) {
+        val fragment = TambahEditTransaksiFragment.newInstance(transactionId)
+        fragmentManager?.beginTransaction()?.apply {
+            replace(R.id.rvTransactions, fragment)
+            addToBackStack(null)
+            commit()
+        }
     }
 }

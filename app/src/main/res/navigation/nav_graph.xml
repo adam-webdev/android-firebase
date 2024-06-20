@@ -16,7 +16,11 @@
         android:name="com.example.firebase.InfoFragment"
         android:label="Info"
         tools:layout="@layout/fragment_info" />
-
+    <fragment
+        android:id="@+id/navigation_tambah"
+        android:name="com.example.firebase.TambahEditTransaksiFragment"
+        android:label="Tambah"
+        tools:layout="@layout/fragment_tambah_edit_transaksi" />
     <fragment
         android:id="@+id/navigation_riwayat"
         android:name="com.example.firebase.RiwayatFragment"
