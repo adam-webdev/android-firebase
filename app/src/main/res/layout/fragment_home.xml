@@ -154,6 +154,13 @@
             android:layout_height="200dp" />
 
         <!-- Menu -->
+        <Button
+            android:id="@+id/startDetectionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_centerInParent="true"
+            android:text="Start Face Detection" />
 
     </LinearLayout>
 

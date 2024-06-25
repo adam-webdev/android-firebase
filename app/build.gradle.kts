@@ -44,6 +44,12 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
 
+    implementation("com.google.firebase:firebase-ml-vision:24.1.0")
+    implementation("com.google.firebase:firebase-ml-vision-face-model:20.0.2")
+
+    implementation("com.google.mlkit:face-detection:16.0.6")
+    implementation("androidx.core:core-ktx:1.9.0") // Untuk menggunakan extension function seperti .toBitmap()
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -54,6 +60,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.androidx.recyclerview)
+//    implementation(libs.play.services.mlkit.face.detection)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
